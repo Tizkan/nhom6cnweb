@@ -1,0 +1,23 @@
+<div class="settings-container">
+  <h2>Tài khoản</h2>
+
+  <p>
+    Họ tên:
+    {{ currentUser?.full_name }}
+  </p>
+
+  <p>
+    Email:
+    {{ currentUser?.email }}
+  </p>
+
+  <p>
+    Vai trò:
+    {{ currentUser?.role }}
+  </p>
+
+  <a (click)="logout()" class="logout-btn">
+    <i class="fa-solid fa-right-from-bracket"></i>
+    <span>Đăng xuất</span>
+  </a>
+</div>

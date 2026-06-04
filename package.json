@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@angular/ssr": "^21.2.14"
+  }
+}
