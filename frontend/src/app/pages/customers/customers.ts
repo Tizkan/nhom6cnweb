@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
@@ -41,7 +41,11 @@ export class CustomersComponent implements OnInit {
 
   private routerSubscription: Subscription | null = null;
 
-  constructor(private customerService: CustomerService, private router: Router) {}
+  constructor(
+    private customerService: CustomerService,
+    private router: Router,
+    private cdRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -79,9 +83,11 @@ export class CustomersComponent implements OnInit {
         this.totalRevenue = data.reduce((sum, c) => sum + Number(c.total_spent ?? 0), 0);
         this.applyFilter();
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
     });
   }
