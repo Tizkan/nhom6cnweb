@@ -47,7 +47,7 @@ export class EditBooking implements OnInit {
   }
 
   loadCustomers() {
-    this.customerService.getCustomers().subscribe((data) => {
+    this.customerService.getCustomers().subscribe((data: any[]) => {
       this.customers = data;
       this.cdr.detectChanges();
     });

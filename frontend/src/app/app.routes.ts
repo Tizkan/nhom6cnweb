@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Rooms } from './pages/rooms/rooms';
-import { Customers } from './pages/customers/customers';
+import { CustomersComponent } from './pages/customers/customers';
 import { Bookings } from './pages/bookings/bookings';
 import { Reports } from './pages/reports/reports';
 import { Settings } from './pages/settings/settings';
@@ -29,7 +29,7 @@ export const routes: Routes = [
       { path: 'rooms/create-room', component: CreateRoom },
       { path: 'rooms/edit/:id', component: EditRoom },
 
-      { path: 'customers', component: Customers },
+      { path: 'customers', component: CustomersComponent, runGuardsAndResolvers: 'always' },
 
       { path: 'bookings', component: Bookings },
       { path: 'bookings/create-booking', component: CreateBooking },
