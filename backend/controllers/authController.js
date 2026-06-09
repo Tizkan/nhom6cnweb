@@ -10,7 +10,7 @@ exports.login = (req, res) => {
   }
 
   db.query(
-    "SELECT id, full_name, email, password, role FROM users WHERE email = ?",
+    "SELECT id, full_name, email, password FROM users WHERE email = ?",
     [email],
     (err, results) => {
       if (err) {

@@ -1,7 +1,6 @@
 <div class="booking-container">
   <div class="top-bar">
     <h1>Quản lý đặt phòng</h1>
-
     <button class="btn-create" routerLink="/bookings/create-booking">+ Tạo đặt phòng mới</button>
   </div>
 
@@ -10,27 +9,37 @@
       <span>Tổng đặt phòng</span>
       <h2>{{ bookings.length }}</h2>
     </div>
-
     <div class="card">
       <span>Chờ xác nhận</span>
       <h2>{{ getBookingCount('Chờ xác nhận') }}</h2>
     </div>
-
     <div class="card">
       <span>Đã xác nhận</span>
       <h2>{{ getBookingCount('Đã xác nhận') }}</h2>
     </div>
-
     <div class="card">
       <span>Đang ở</span>
       <h2>{{ getBookingCount('Đã Check-in') }}</h2>
     </div>
   </div>
 
+  <!-- Thanh toán nổi lên khi có chọn booking -->
+  <div class="pay-bar" *ngIf="selectedIds.size > 0">
+    <span
+      >Đã chọn <strong>{{ selectedIds.size }}</strong> booking — Tổng:
+      <strong>{{ selectedTotal | number }}đ</strong>
+    </span>
+    <button class="btn-pay" (click)="pay()" [disabled]="paying">
+      {{ paying ? 'Đang xử lý...' : ' Thanh toán ' }}
+    </button>
+  </div>
+
   <div class="table-wrapper">
     <table>
       <thead>
         <tr>
+          <th></th>
+          <!-- cột checkbox -->
           <th>Mã đặt</th>
           <th>Khách hàng</th>
           <th>Phòng</th>
@@ -43,51 +52,39 @@
           <th>Thao tác</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let b of bookings">
-          <td>#{{ b.id }}</td>
+        <tr *ngFor="let b of bookings" [class.selected-row]="isSelected(b.id)">
+          <td>
+            <input
+              type="checkbox"
+              *ngIf="isSelectable(b)"
+              [checked]="isSelected(b.id)"
+              (change)="toggleSelect(b.id)"
+            />
+          </td>
 
+          <td>#{{ b.id }}</td>
           <td>
             <div class="customer">
               <strong>{{ b.full_name }}</strong>
               <small>{{ b.phone }}</small>
             </div>
           </td>
-
           <td>{{ b.room_number }}</td>
-
           <td>{{ b.check_in | date: 'dd/MM/yyyy' }}</td>
-
           <td>{{ b.check_out | date: 'dd/MM/yyyy' }}</td>
-
           <td>{{ b.adults }}</td>
-
           <td>{{ b.children }}</td>
-
+          <td>{{ b.total_amount ? (b.total_amount | number) + 'đ' : '0đ' }}</td>
           <td>
-            {{ b.total_amount ? (b.total_amount | number) + 'đ' : '0đ' }}
-          </td>
-
-          <td>
-            <span
-              class="status"
-              [ngClass]="{
-                'waiting-status': b.status === 'Chờ xác nhận',
-                'confirmed-status': b.status === 'Đã xác nhận',
-                'checkin-status': b.status === 'Đã Check-in',
-                'checkout-status': b.status === 'Đã Check-out',
-              }"
-            >
+            <span class="status" [ngClass]="getStatusClass(b.status)">
               {{ b.status }}
             </span>
           </td>
-
           <td>
             <div class="actions">
-              <button class="edit"[routerLink]="['/bookings/edit', b.id]">✏</button>
-
-              <button class="delete"(click)="deleteBooking(b.id)">✖</button>
+              <button class="edit" [routerLink]="['/bookings/edit', b.id]">✏</button>
+              <button class="delete" (click)="deleteBooking(b.id)">✖</button>
             </div>
           </td>
         </tr>

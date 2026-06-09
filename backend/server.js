@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
 const path = require("path");
@@ -8,6 +9,13 @@ const roomRoutes = require('./routes/roomRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 
 const app = express();
+
+app.set('trust proxy', 1);                        
+app.use(express.urlencoded({ extended: true }));  
+app.use((req, res, next) => {                     
+  res.setHeader('ngrok-skip-browser-warning', 'true');
+  next();
+});
 
 app.use(cors());
 app.use(express.json());
@@ -22,9 +30,13 @@ const frontendPath = path.join(__dirname, '../frontend/dist/frontend/browser');
 app.use(express.static(frontendPath));
 
 // SPA fallback: for any GET request that is not an API route, serve index.html
-const apiPrefixes = ['/auth', '/bookings', '/rooms', '/customers', '/api/auth', '/api/bookings', '/api/rooms', '/api/customers'];
+const apiPrefixes = ['/auth', '/bookings', '/rooms', '/customers', '/api/auth', '/api/bookings', '/api/rooms', '/api/customers', '/api/payment'];
+
+const paymentRouter = require('./routes/payment');
+app.use('/api/payment', paymentRouter);
 
 app.use((req, res, next) => {
+  console.log('>>> MIDDLEWARE path:', req.path, '| method:', req.method);
   // only handle GET requests here
   if (req.method !== 'GET') return next();
 

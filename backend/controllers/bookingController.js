@@ -128,3 +128,17 @@ exports.getBookingById = (req, res) => {
     },
   );
 };
+exports.updatePaymentStatus = (req, res) => {
+  const { ids } = req.body; // mảng id booking
+  if (!ids || !ids.length) return res.status(400).json({ message: 'Không có booking nào' });
+
+  const placeholders = ids.map(() => '?').join(',');
+  db.query(
+    `UPDATE Bookings SET status = 'Đã xác nhận' WHERE id IN (${placeholders})`,
+    ids,
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ success: true });
+    }
+  );
+};

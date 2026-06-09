@@ -162,3 +162,41 @@ td {
 .delete:hover {
   background: #4b0101;
 }
+/* Thanh toán nổi */
+.pay-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #EAF3DE;
+  border: 1px solid #C0DD97;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  color: #3B6D11;
+}
+
+.btn-pay {
+  background: #3B6D11;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-pay:hover { opacity: 0.85; }
+.btn-pay:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Row được chọn */
+.selected-row { background: #f0f9e8 !important; }
+
+/* Checkbox */
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3B6D11;
+}

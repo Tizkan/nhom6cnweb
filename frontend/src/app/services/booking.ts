@@ -26,4 +26,16 @@ export class BookingService {
   updateBooking(id: number, data: any) {
     return this.http.put(`${this.api}/${id}`, data);
   }
+
+  createPayment(bookingIds: number[], totalAmount: number): Observable<any> {
+    return this.http.post('http://localhost:3000/api/payment/create', {
+      orderId: 'BOOKING_' + Date.now(),
+      amount: totalAmount,
+      bookingIds,
+    });
+  }
+
+  updatePaymentStatus(ids: number[]): Observable<any> {
+    return this.http.post(`${this.api}/update-payment`, { ids });
+  }
 }

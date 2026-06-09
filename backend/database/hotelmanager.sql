@@ -21,35 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '712b8e60-5340-11f1-84e7-f426791b2ad2:1-23';
-
---
--- Table structure for table `booking_services`
---
-
-DROP TABLE IF EXISTS `booking_services`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `booking_services` (
-  `booking_id` int NOT NULL,
-  `service_id` int NOT NULL,
-  `quantity` int DEFAULT '1',
-  PRIMARY KEY (`booking_id`,`service_id`),
-  KEY `service_id` (`service_id`),
-  CONSTRAINT `booking_services_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`),
-  CONSTRAINT `booking_services_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `booking_services`
---
-
-LOCK TABLES `booking_services` WRITE;
-/*!40000 ALTER TABLE `booking_services` DISABLE KEYS */;
-INSERT INTO `booking_services` VALUES (1,1,2),(1,2,1),(2,4,1);
-/*!40000 ALTER TABLE `booking_services` ENABLE KEYS */;
-UNLOCK TABLES;
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '712b8e60-5340-11f1-84e7-f426791b2ad2:1-19';
 
 --
 -- Table structure for table `bookings`
@@ -74,7 +46,7 @@ CREATE TABLE `bookings` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
   CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +55,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
-INSERT INTO `bookings` VALUES (1,1,2,'2026-05-20','2026-05-22',2,0,1000000.00,'Đã xác nhận','2026-05-19 05:40:40'),(2,2,3,'2026-05-21','2026-05-25',2,1,3200000.00,'Đã Check-in','2026-05-19 05:40:40');
+INSERT INTO `bookings` VALUES (1,1,2,'2026-05-20','2026-05-22',2,0,1000000.00,'Đã xác nhận','2026-05-19 05:40:40'),(2,2,3,'2026-05-21','2026-05-25',2,1,3200000.00,'Đã Check-in','2026-05-19 05:40:40'),(5,1,1,'2026-06-07','2026-07-07',0,0,500000.00,'Đã xác nhận','2026-06-07 13:08:53');
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,7 +75,7 @@ CREATE TABLE `customers` (
   `citizen_id` varchar(30) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,7 +105,7 @@ CREATE TABLE `payments` (
   PRIMARY KEY (`id`),
   KEY `booking_id` (`booking_id`),
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,7 +132,7 @@ CREATE TABLE `room_types` (
   `capacity` int DEFAULT '1',
   `description` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,7 +162,7 @@ CREATE TABLE `rooms` (
   UNIQUE KEY `room_number` (`room_number`),
   KEY `room_type_id` (`room_type_id`),
   CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,34 +171,37 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'101',1,1,'available'),(2,'102',1,1,'booked'),(3,'201',2,2,'occupied'),(4,'301',3,3,'available');
+INSERT INTO `rooms` VALUES (1,'101',1,1,'available'),(2,'102',1,1,'booked'),(3,'201',2,2,'occupied'),(4,'301',3,3,'available'),(5,'109',NULL,NULL,'cleaning');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `services`
+-- Table structure for table `staffs`
 --
 
-DROP TABLE IF EXISTS `services`;
+DROP TABLE IF EXISTS `staffs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `services` (
+CREATE TABLE `staffs` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `service_name` varchar(100) DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
-  `description` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `full_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `birth_date` date DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `citizen_id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_staffs_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `services`
+-- Dumping data for table `staffs`
 --
 
-LOCK TABLES `services` WRITE;
-/*!40000 ALTER TABLE `services` DISABLE KEYS */;
-INSERT INTO `services` VALUES (1,'Breakfast',100000.00,'Buffet sang'),(2,'Laundry',50000.00,'Giat ui'),(3,'Airport Pickup',300000.00,'Don san bay'),(4,'Spa',400000.00,'Massage spa');
-/*!40000 ALTER TABLE `services` ENABLE KEYS */;
+LOCK TABLES `staffs` WRITE;
+/*!40000 ALTER TABLE `staffs` DISABLE KEYS */;
+INSERT INTO `staffs` VALUES (1,'Nguyen Thi Lan','1995-03-15','lan.nv@hotel.com','034195001234','2026-06-07 09:55:38'),(2,'Tran Van Minh','1998-07-22','minh.tv@hotel.com','079198005678','2026-06-07 09:55:38'),(3,'Le Thi Hoa','2000-01-10','hoa.lt@hotel.com','45651235487','2026-06-07 09:55:38'),(4,'skibibi toilet','2004-02-11','dongphung360@gmail.com','12345678941','2026-06-07 09:59:48');
+/*!40000 ALTER TABLE `staffs` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -238,14 +213,13 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `full_name` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('admin','staff') DEFAULT 'staff',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `full_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `uq_users_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +228,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Admin Hotel','admin@gmail.com','123456','admin','2026-05-19 05:40:40'),(2,'Staff Hotel','staff@gmail.com','123456','staff','2026-05-19 05:40:40');
+INSERT INTO `users` VALUES (1,'Admin Hotel','admin@gmail.com','123456','2026-05-18 22:40:40');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -268,4 +242,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-20  9:33:16
+-- Dump completed on 2026-06-09 10:06:14

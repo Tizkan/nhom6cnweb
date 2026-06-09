@@ -10,14 +10,16 @@
 }
 
 .add-btn {
-  background: #4da6ff;
+  background: #2563eb;
   border: none;
   padding: 8px 14px;
   color: white;
   border-radius: 6px;
   cursor: pointer;
 }
-
+.add-btn:hover {
+  background: #0f2058;
+}
 .search {
   width: 100%;
   padding: 8px;
