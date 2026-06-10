@@ -11,7 +11,7 @@ exports.getCustomers = (req, res) => {
       c.citizen_id,
       c.created_at,
       COUNT(b.id) AS booking_count,
-      COALESCE(SUM(b.total_amount), 0) AS total_spent,
+      COALESCE(SUM(CASE WHEN b.status IN ('Đã xác nhận', 'Đã Check-in', 'Đang ở') THEN b.total_amount ELSE 0 END), 0) AS total_spent,
       MAX(b.created_at) AS last_booking_date
     FROM customers c
     LEFT JOIN bookings b ON b.customer_id = c.id
