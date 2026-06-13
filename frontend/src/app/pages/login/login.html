@@ -1,0 +1,17 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Hotel Manager</h1>
+
+    <input type="email" placeholder="Email" [(ngModel)]="email" />
+
+    <input type="password" placeholder="Mật khẩu" [(ngModel)]="password" />
+
+    <button (click)="login()" [disabled]="loading">
+      {{ loading ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+    </button>
+
+    <p *ngIf="errorMessage" class="error">
+      {{ errorMessage }}
+    </p>
+  </div>
+</div>

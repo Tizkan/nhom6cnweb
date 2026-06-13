@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f7fb;
+}
+
+.content {
+  flex: 1;
+  margin-left: 245px;
+  min-height: 100vh;
+  padding: 30px;
+  background: #f4f7fb;
+  overflow-x: hidden;
+}

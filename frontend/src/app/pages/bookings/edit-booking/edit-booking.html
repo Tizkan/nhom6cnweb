@@ -1,0 +1,51 @@
+<div class="page-header">
+  <h1>Sửa đặt phòng</h1>
+</div>
+
+<form class="form-card" (ngSubmit)="updateBooking()">
+  <div class="form-group">
+    <label>Khách hàng</label>
+
+    <select [(ngModel)]="booking.customer_id" name="customer_id">
+      <option *ngFor="let c of customers" [value]="c.id">
+        {{ c.full_name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Phòng</label>
+
+    <select [(ngModel)]="booking.room_id" name="room_id">
+      <option *ngFor="let r of rooms" [value]="r.id">Phòng {{ r.room_number }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Check In</label>
+
+    <input type="date" [(ngModel)]="booking.check_in" name="check_in" />
+  </div>
+
+  <div class="form-group">
+    <label>Check Out</label>
+
+    <input type="date" [(ngModel)]="booking.check_out" name="check_out" />
+  </div>
+
+  <div class="form-group">
+    <label>Trạng thái</label>
+
+    <select [(ngModel)]="booking.status" name="status">
+      <option value="Đã xác nhận">Đã xác nhận</option>
+
+      <option value="Đang ở">Đang ở</option>
+
+      <option value="Đã trả phòng">Đã trả phòng</option>
+
+      <option value="Chờ xác nhận">Chờ xác nhận</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn-save">Cập nhật</button>
+</form>
