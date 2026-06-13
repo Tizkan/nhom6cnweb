@@ -22,12 +22,16 @@
   </div>
 
   <div class="form-group">
+    <label>Giá/đêm (VNĐ)</label>
+    <input type="number" [(ngModel)]="room.price_per_night" name="price_per_night" placeholder="VD: 500000" min="0" />
+  </div>
+
+  <div class="form-group">
     <label>Trạng thái</label>
     <select [(ngModel)]="room.status" name="status">
       <option value="available">Trống</option>
       <option value="occupied">Đang thuê</option>
       <option value="booked">Đặt trước</option>
-      <option value="cleaning">Đang dọn</option>
     </select>
   </div>
 

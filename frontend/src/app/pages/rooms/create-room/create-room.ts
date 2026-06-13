@@ -19,11 +19,14 @@ export class CreateRoom {
 
   onSubmit(form: NgForm) {
     if (form.valid) {
-      const newRoom = form.value;
+      const { price_per_night, ...roomData } = form.value;
 
-      // Giữ nguyên logic gửi form ban đầu của bạn
-      this.roomService.createRoom(newRoom).subscribe({
+      this.roomService.createRoom(roomData).subscribe({
         next: (res: any) => {
+          const newId = res?.id;
+          if (newId && price_per_night) {
+            localStorage.setItem(`room_price_${newId}`, String(price_per_night));
+          }
           alert('Thêm phòng mới thành công!');
           this.router.navigate(['/rooms']);
         },

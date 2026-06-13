@@ -57,7 +57,7 @@ exports.createRoom = (req, res) => {
     VALUES (?, ?, ?, ?)
     `,
     [room_number, room_type_id, floor_number, status],
-    (err) => {
+    (err, result) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
@@ -66,6 +66,7 @@ exports.createRoom = (req, res) => {
       res.json({
         success: true,
         message: "Thêm phòng thành công",
+        id: result.insertId
       });
     }
   );

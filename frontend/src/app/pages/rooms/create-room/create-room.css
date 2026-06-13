@@ -31,7 +31,6 @@
   font-size: 15px;
   cursor: pointer;
 }
-
 .btn-top-back:hover {
   background-color: #78716c;
 }
@@ -93,11 +92,9 @@
   font-weight: 500;
   cursor: pointer;
 }
-
 .btn-save:hover {
   background-color: #1d4ed8;
 }
-
 .btn-save:disabled {
   background-color: #93c5fd;
   cursor: not-allowed;
@@ -113,7 +110,6 @@
   font-weight: 500;
   cursor: pointer;
 }
-
 .btn-cancel:hover {
   background-color: #dc2626;
 }

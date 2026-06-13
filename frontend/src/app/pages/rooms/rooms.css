@@ -20,6 +20,7 @@
 .add-btn:hover {
   background: #0f2058;
 }
+
 .search {
   width: 100%;
   padding: 8px;
@@ -41,6 +42,11 @@ th, td {
 }
 
 .bold { font-weight: bold; }
+
+.price {
+  font-weight: 600;
+  color: #2563eb;
+}
 
 .status {
   padding: 5px 10px;
@@ -80,7 +86,6 @@ th, td {
 }
 .delete-btn:hover { background: #4b0101; }
 
-/* MODAL */
 .modal-overlay {
   position: fixed;
   inset: 0;

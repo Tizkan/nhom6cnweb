@@ -19,7 +19,8 @@ export class EditRoom implements OnInit {
     room_number: '',
     floor_number: '',
     room_type_id: '',
-    status: ''
+    status: '',
+    price_per_night: null
   };
 
   roomTypes = [
@@ -43,12 +44,26 @@ export class EditRoom implements OnInit {
   loadRoom() {
     this.roomService.getRoomById(this.id).subscribe((data: any) => {
       this.room = data;
+
+      // Đọc giá từ localStorage
+      const savedPrice = localStorage.getItem(`room_price_${this.id}`);
+      this.room.price_per_night = savedPrice ? Number(savedPrice) : null;
+
       this.cdr.detectChanges();
     });
   }
 
   updateRoom() {
-    this.roomService.updateRoom(this.id, this.room).subscribe({
+    // Lưu giá vào localStorage
+    if (this.room.price_per_night !== null && this.room.price_per_night !== undefined) {
+      localStorage.setItem(`room_price_${this.id}`, String(this.room.price_per_night));
+    } else {
+      localStorage.removeItem(`room_price_${this.id}`);
+    }
+
+    // Gửi các field khác lên DB (không gửi price_per_night)
+    const { price_per_night, ...roomData } = this.room;
+    this.roomService.updateRoom(this.id, roomData).subscribe({
       next: () => {
         alert('Cập nhật thành công');
         this.router.navigate(['/rooms']);
