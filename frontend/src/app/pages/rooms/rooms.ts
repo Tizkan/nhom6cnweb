@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RoomService } from '../../services/room';
+import { BookingService } from '../../services/booking';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -20,6 +21,7 @@ export class Rooms implements OnInit {
 
   constructor(
     private roomService: RoomService,
+    private bookingService: BookingService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
@@ -29,15 +31,28 @@ export class Rooms implements OnInit {
   }
 
   loadRooms() {
-    this.roomService.getRooms().subscribe({
-      next: (data) => {
-        this.rooms = data.map((r: any) => {
-          let rawStatus = (r.status || '').toLowerCase().trim();
-          let status = 'available';
-          if (rawStatus === 'occupied') status = 'occupied';
-          else if (rawStatus === 'booked') status = 'booked';
-          else if (rawStatus === 'cleaning') status = 'cleaning';
-          else if (rawStatus === 'maintenance') status = 'maintenance';
+    forkJoin([
+      this.roomService.getRooms(),
+      this.bookingService.getBookings()
+    ]).subscribe({
+      next: ([rooms, bookings]: [any[], any[]]) => {
+        this.rooms = rooms.map((r: any) => {
+
+          // Tìm booking mới nhất của phòng này theo room_number
+          const roomBookings = bookings.filter((b: any) =>
+            b.room_number === r.room_number
+          );
+          const latestBooking = roomBookings[roomBookings.length - 1];
+
+          // Map trạng thái booking → trạng thái phòng
+          let status = r.status || 'available';
+          if (latestBooking) {
+            const bs = (latestBooking.status || '').trim();
+            if (bs === 'Chờ Xác Nhận') status = 'available';
+            else if (bs === 'Đã Xác Nhận') status = 'booked';
+            else if (bs === 'Đã Check-In') status = 'occupied';
+            else if (bs === 'Đã Check-out') status = 'cleaning';
+          }
 
           return { ...r, floor: r.floor_number || 0, status };
         });
@@ -66,19 +81,11 @@ export class Rooms implements OnInit {
 
   getStatusLabel(status: string): string {
     const map: any = {
-<<<<<<< HEAD
       available:   'Trống',
       occupied:    'Đang ở',
       booked:      'Đã đặt',
       cleaning:    'Đã trả phòng',
-      maintenance: 'Đang bảo trì'
-=======
-      available: 'Trống',
-      occupied: 'Đang ở',
-      booked: 'Đã Đặt',
-      cleaning: 'Đã Trả Phòng',
-      maintenance: 'Đang Bảo Trì'
->>>>>>> 93f509095af8f670502e65a72dd5c1ac0edda0b8
+      maintenance: 'Đang bảo trì',
     };
     return map[status] || 'Trống';
   }

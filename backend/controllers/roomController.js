@@ -91,15 +91,15 @@ exports.updateRoom = (req, res) => {
       let bookingStatus = null;
       const s = (status || '').trim();
 
-      if (s === 'booked') bookingStatus = 'Đã Xác Nhận';
-      else if (s === 'occupied') bookingStatus = 'Đã Check-In';
-      else if (s === 'available') bookingStatus = 'Đã Check-out';
+      if (s === 'available') bookingStatus = 'Chờ Xác Nhận';
+      else if (s === 'booked') bookingStatus = 'Đã Xác Nhận';
+      else if (s === 'occupied') bookingStatus = 'Đã Check-in';
+      else if (s === 'cleaning') bookingStatus = 'Đã Check-out';
 
       if (bookingStatus) {
         db.query(
           `UPDATE Bookings SET status = ?
            WHERE room_id = ?
-           AND status NOT IN ('Đã Hủy', 'Đã Check-out')
            ORDER BY id DESC
            LIMIT 1`,
           [bookingStatus, id],
