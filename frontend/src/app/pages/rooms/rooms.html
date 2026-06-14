@@ -39,10 +39,11 @@
           <span
             class="status"
             [ngClass]="{
-              'available': r.status === 'available',
-              'occupied':  r.status === 'occupied',
-              'booked':    r.status === 'booked',
-              'cleaning':  r.status === 'cleaning'
+              'available':      r.status === 'available',
+              'occupied':       r.status === 'occupied',
+              'booked':         r.status === 'booked',
+              'cleaning':       r.status === 'cleaning',
+              'maintenance':    r.status === 'maintenance'
             }"
           >
             {{ getStatusLabel(r.status) }}

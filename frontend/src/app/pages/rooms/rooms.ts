@@ -34,9 +34,10 @@ export class Rooms implements OnInit {
         this.rooms = data.map((r: any) => {
           let rawStatus = (r.status || '').toLowerCase().trim();
           let status = 'available';
-          if (rawStatus === 'occupied') status = 'occupied';
-          else if (rawStatus === 'booked') status = 'booked';
-          else if (rawStatus === 'cleaning') status = 'cleaning';
+          if (rawStatus === 'Đã Check-in') status = 'occupied';
+          else if (rawStatus === 'Đã Đặt') status = 'booked';
+          else if (rawStatus === 'Đã Check-out') status = 'cleaning';
+          else if (rawStatus === 'Đang Bảo Trì') status = 'maintenance'
 
           return { ...r, floor: r.floor_number || 0, status };
         });
@@ -66,9 +67,10 @@ export class Rooms implements OnInit {
   getStatusLabel(status: string): string {
     const map: any = {
       available: 'Trống',
-      occupied: 'Đang thuê',
-      booked: 'Đặt trước',
-      cleaning: 'Đang dọn'
+      occupied: 'Đang ở',
+      booked: 'Đã Đặt',
+      cleaning: 'Đã trả phòng',
+      maintenance: 'Đang Bảo Trì'
     };
     return map[status] || '';
   }

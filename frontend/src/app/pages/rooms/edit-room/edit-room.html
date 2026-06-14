@@ -25,8 +25,10 @@
     <label>Trạng thái</label>
     <select [(ngModel)]="room.status" name="status">
       <option value="available">Trống</option>
-      <option value="occupied">Đang thuê</option>
-      <option value="booked">Đặt trước</option>
+      <option value="occupied">Đã Check-in</option>
+      <option value="booked">Đặt Đặt</option>
+      <option value="cleaning">Đặt Check-out</option>
+      <option value="maintenance">Đang Bảo Trì</option>
     </select>
   </div>
 
