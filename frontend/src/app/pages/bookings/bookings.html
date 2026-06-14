@@ -79,7 +79,7 @@
           <td>{{ b.check_out | date: 'dd/MM/yyyy' }}</td>
           <td>{{ b.adults }}</td>
           <td>{{ b.children }}</td>
-          <td>{{ b.total_amount | number }}đ</td>
+          <td>{{ b.total_amount ? (b.total_amount | number) + 'đ' : '0đ' }}</td>
           <td>
             <span class="status" [ngClass]="getStatusClass(b.status)">
               {{ b.status }}
