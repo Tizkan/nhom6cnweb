@@ -30,27 +30,40 @@
 .stats {
   display: grid;
 
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 
-  gap: 20px;
+  gap: 10px;
 
   margin-bottom: 25px;
-
 }
-.card:nth-child(1) h2 {
+
+.card:nth-child(1) h2,
+.card:nth-child(1) {
   color: #0f172a;
+  background-color: #d5d5d5;
 }
 
-.card:nth-child(2) h2 {
+.card:nth-child(2) h2,
+.card:nth-child(2) {
   color: #d97706;
+  background-color: #ffefdb;
 }
 
-.card:nth-child(3) h2 {
+.card:nth-child(3) h2,
+.card:nth-child(3) {
   color: #2563eb;
+  background-color: #dee7fc;
 }
 
-.card:nth-child(4) h2 {
+.card:nth-child(4) h2,
+.card:nth-child(4) {
   color: #16a34a;
+  background-color: #e4fcee;
+}
+.card:nth-child(5) h2,
+.card:nth-child(5) {
+  color: #5e2e83;
+  background-color: #f6eaff;
 }
 
 .card {
@@ -62,7 +75,6 @@
 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
-
 
 .card h2 {
   margin-top: 10px;
@@ -129,55 +141,48 @@ td {
 }
 
 .checkout-status {
-  background: #e5e7eb;
-  color: #374151;
+  background: #f2dcfc;
+  color: #5e2e83;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
-.edit,
-.delete {
-  width: 36px;
-  height: 36px;
+.btn-action {
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
+  padding: 10px 16px;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform .15s, background .2s;
+  min-width: 64px;
 }
 
-.edit {
-  background: #2563eb;
-  color: white;
+.btn-action:hover {
+  transform: translateY(-1px);
 }
-.edit:hover {
-  background: #0f2058;
-}
-
-.delete {
-  background: #ef4444;
-  color: white;
-}
-.delete:hover {
-  background: #4b0101;
-}
+.edit { background: #fbc2c2; color: #f74d4d;} .edit:hover {background-color: #ffb4b4;}
+.delete { background: #d3e2ff; color: #5b92f7; } .delete:hover {background-color: #aec7f9;}
 /* Thanh toán nổi */
 .pay-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #EAF3DE;
-  border: 1px solid #C0DD97;
+  background: #eaf3de;
+  border: 1px solid #c0dd97;
   border-radius: 10px;
   padding: 12px 20px;
   margin-bottom: 1rem;
   font-size: 14px;
-  color: #3B6D11;
+  color: #3b6d11;
 }
 
 .btn-pay {
-  background: #3B6D11;
+  background: #3b6d11;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -187,16 +192,23 @@ td {
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.btn-pay:hover { opacity: 0.85; }
-.btn-pay:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-pay:hover {
+  opacity: 0.85;
+}
+.btn-pay:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* Row được chọn */
-.selected-row { background: #f0f9e8 !important; }
+.selected-row {
+  background: #f0f9e8 !important;
+}
 
 /* Checkbox */
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: 16px;
   height: 16px;
   cursor: pointer;
-  accent-color: #3B6D11;
+  accent-color: #3b6d11;
 }

@@ -11,15 +11,19 @@
     </div>
     <div class="card">
       <span>Chờ xác nhận</span>
-      <h2>{{ getBookingCount('Chờ xác nhận') }}</h2>
+      <h2>{{ getBookingCount('Chờ Xác Nhận') }}</h2>
     </div>
     <div class="card">
-      <span>Đã xác nhận</span>
-      <h2>{{ getBookingCount('Đã xác nhận') }}</h2>
+      <span>Đã Xác Nhận</span>
+      <h2>{{ getBookingCount('Đã Xác Nhận') }}</h2>
     </div>
     <div class="card">
-      <span>Đang ở</span>
+      <span>Đang Check-in</span>
       <h2>{{ getBookingCount('Đã Check-in') }}</h2>
+    </div>
+    <div class="card">
+      <span>Đã Check-out</span>
+      <h2>{{ getBookingCount('Đã Check-out') }}</h2>
     </div>
   </div>
 
@@ -83,8 +87,8 @@
           </td>
           <td>
             <div class="actions">
-              <button class="edit" [routerLink]="['/bookings/edit', b.id]">✏</button>
-              <button class="delete" (click)="deleteBooking(b.id)">✖</button>
+              <button class="btn-action edit" [routerLink]="['/bookings/edit', b.id]">✏</button>
+              <button class="btn-action delete" (click)="deleteBooking(b.id)">✖</button>
             </div>
           </td>
         </tr>

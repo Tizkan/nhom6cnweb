@@ -50,7 +50,7 @@ export class Bookings implements OnInit {
 
   // Chỉ cho chọn booking "Chờ xác nhận"
   isSelectable(b: any): boolean {
-    return b.status === 'Chờ xác nhận';
+    return b.status === 'Chờ Xác Nhận';
   }
 
   toggleSelect(id: number) {
@@ -99,10 +99,10 @@ export class Bookings implements OnInit {
   }
   getStatusClass(status: string): string {
     switch (status) {
-      case 'Chờ xác nhận':
+      case 'Chờ Xác Nhận':
         return 'waiting-status';
 
-      case 'Đã xác nhận':
+      case 'Đã Xác Nhận':
         return 'confirmed-status';
 
       case 'Đã Check-in':
