@@ -1,12 +1,20 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-reports',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [],
   templateUrl: './reports.html',
-  styleUrls: ['./reports.css'],
+  styleUrl: './reports.css'
 })
 export class Reports {
+
+  // === THÊM BIẾN DATA VÀO ĐÂY ===
+  data: any = {
+    totalCustomers: 0,  // Bạn có thể sửa số 0 này thành số bất kỳ để test giao diện
+    totalRooms: 0,
+    totalBookings: 0,
+    totalRevenue: 0
+  };
 
 }
