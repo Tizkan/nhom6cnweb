@@ -21,6 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '712b8e60-5340-11f1-84e7-f426791b2ad2:1-146';
 
 --
 -- Table structure for table `booking_services`
@@ -37,7 +38,7 @@ CREATE TABLE `booking_services` (
   KEY `service_id` (`service_id`),
   CONSTRAINT `booking_services_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`),
   CONSTRAINT `booking_services_ibfk_2` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,7 +74,7 @@ CREATE TABLE `bookings` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
   CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -82,7 +83,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
-INSERT INTO `bookings` VALUES (1,1,2,'2026-05-20','2026-05-22',2,0,1000000.00,'Đã xác nhận','2026-05-19 05:40:40'),(2,2,30,'2026-05-17','2026-05-21',2,1,6000000.00,'Đã trả phòng','2026-05-19 05:40:40');
+INSERT INTO `bookings` VALUES (1,1,2,'2026-05-03','2026-05-05',2,0,1000000.00,'Đã Check-in','2026-05-19 05:40:40'),(2,2,30,'2026-05-08','2026-05-12',2,1,6000000.00,'Đã Check-out','2026-05-19 05:40:40'),(11,2,28,'2026-06-14','2026-07-14',1,0,NULL,'Chờ Xác Nhận','2026-06-14 04:17:24');
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,7 +103,7 @@ CREATE TABLE `customers` (
   `citizen_id` varchar(30) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +133,7 @@ CREATE TABLE `payments` (
   PRIMARY KEY (`id`),
   KEY `booking_id` (`booking_id`),
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,7 +160,7 @@ CREATE TABLE `room_types` (
   `capacity` int DEFAULT '1',
   `description` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +190,7 @@ CREATE TABLE `rooms` (
   UNIQUE KEY `room_number` (`room_number`),
   KEY `room_type_id` (`room_type_id`),
   CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,7 +199,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (2,'102',1,1,'booked'),(26,'101',1,1,'available'),(28,'103',2,1,'available'),(29,'104',2,1,'available'),(30,'105',3,1,'occupied'),(31,'201',1,2,'available'),(32,'202',1,2,'available'),(33,'203',2,2,'available'),(34,'204',2,2,'available'),(35,'205',3,2,'available'),(36,'301',1,3,'available'),(37,'302',1,3,'available'),(38,'303',2,3,'available'),(39,'304',2,3,'available'),(40,'305',3,3,'available'),(41,'401',1,4,'available'),(42,'402',1,4,'available'),(43,'403',2,4,'available'),(44,'404',2,4,'available'),(45,'405',3,4,'available');
+INSERT INTO `rooms` VALUES (2,'102',1,1,'occupied'),(26,'101',1,1,'maintenance'),(28,'103',2,1,'available'),(29,'104',2,1,'available'),(30,'105',3,1,'maintenance'),(31,'201',1,2,'available'),(32,'202',1,2,'available'),(33,'203',2,2,'available'),(34,'204',2,2,'available'),(35,'205',3,2,'available'),(36,'301',1,3,'available'),(37,'302',1,3,'available'),(38,'303',2,3,'available'),(39,'304',2,3,'available'),(40,'305',3,3,'available'),(41,'401',1,4,'available'),(42,'402',1,4,'available'),(43,'403',2,4,'available'),(44,'404',2,4,'available'),(45,'405',3,4,'available');
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -215,7 +216,7 @@ CREATE TABLE `services` (
   `price` decimal(10,2) DEFAULT NULL,
   `description` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,4 +297,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-14  8:33:17
+-- Dump completed on 2026-06-14 11:59:53
