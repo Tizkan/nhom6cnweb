@@ -64,27 +64,27 @@ th, td {
   gap: 8px;
 }
 
-.edit-btn,
-.delete-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
 .edit-btn {
-  background: #2563eb;
-  color: white;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #d1fae5;
+  color: #059669;
 }
-.edit-btn:hover { background: #0f2058; }
+.edit-btn:hover { background: #a7f3d0; }
 
 .delete-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
   background: #ef4444;
   color: white;
 }
-.delete-btn:hover { background: #4b0101; }
+.delete-btn:hover { background: #dc2626; }
 
 .modal-overlay {
   position: fixed;

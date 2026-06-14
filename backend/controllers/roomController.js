@@ -7,19 +7,20 @@ exports.getRooms = (req, res) => {
   db.query(
     `
     SELECT
-      id,
-      room_number,
-      room_type_id,
-      floor_number,
-      status
-    FROM Rooms
+      r.id,
+      r.room_number,
+      r.room_type_id,
+      r.floor_number,
+      r.status,
+      rt.price AS price_per_night
+    FROM Rooms r
+    LEFT JOIN room_types rt ON r.room_type_id = rt.id
     `,
     (err, results) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
       }
-
       res.json(results);
     }
   );

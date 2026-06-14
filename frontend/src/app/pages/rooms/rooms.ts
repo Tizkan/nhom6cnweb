@@ -30,6 +30,7 @@ export class Rooms implements OnInit {
   loadRooms() {
     this.roomService.getRooms().subscribe({
       next: (data) => {
+        console.log('data trả về:', data[0]);
         this.rooms = data.map((r: any) => {
           let rawStatus = (r.status || '').toLowerCase().trim();
           let status = 'available';
@@ -37,10 +38,7 @@ export class Rooms implements OnInit {
           else if (rawStatus === 'booked') status = 'booked';
           else if (rawStatus === 'cleaning') status = 'cleaning';
 
-          const savedPrice = localStorage.getItem(`room_price_${r.id}`);
-          const price_per_night = savedPrice ? Number(savedPrice) : null;
-
-          return { ...r, floor: r.floor_number || 0, status, price_per_night };
+          return { ...r, floor: r.floor_number || 0, status };
         });
         this.filteredRooms = [...this.rooms];
         this.cdr.markForCheck();
@@ -82,10 +80,7 @@ export class Rooms implements OnInit {
   deleteRoom(id: number) {
     if (!confirm('Bạn có chắc muốn xóa?')) return;
     this.roomService.deleteRoom(id).subscribe({
-      next: () => {
-        localStorage.removeItem(`room_price_${id}`);
-        this.loadRooms();
-      },
+      next: () => this.loadRooms(),
       error: (err) => {
         if (err.status === 400) {
           alert(err.error.message);
