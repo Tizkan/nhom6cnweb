@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RoomService } from '../../services/room';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-rooms',
@@ -65,11 +66,19 @@ export class Rooms implements OnInit {
 
   getStatusLabel(status: string): string {
     const map: any = {
+<<<<<<< HEAD
       available:   'Trống',
       occupied:    'Đang ở',
       booked:      'Đã đặt',
       cleaning:    'Đã trả phòng',
       maintenance: 'Đang bảo trì'
+=======
+      available: 'Trống',
+      occupied: 'Đang ở',
+      booked: 'Đã Đặt',
+      cleaning: 'Đã Trả Phòng',
+      maintenance: 'Đang Bảo Trì'
+>>>>>>> 93f509095af8f670502e65a72dd5c1ac0edda0b8
     };
     return map[status] || 'Trống';
   }

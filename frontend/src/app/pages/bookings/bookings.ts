@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { BookingService } from '../../services/booking';
+import { RoomService } from '../../services/room';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-bookings',
@@ -18,6 +20,7 @@ export class Bookings implements OnInit {
   constructor(
     private bookingService: BookingService,
     private cdr: ChangeDetectorRef,
+    private roomService: RoomService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -39,12 +42,24 @@ export class Bookings implements OnInit {
   }
 
   loadBookings() {
-    this.bookingService.getBookings().subscribe({
-      next: (data) => {
-        this.bookings = data;
+    forkJoin([this.bookingService.getBookings(), this.roomService.getRooms()]).subscribe({
+      next: ([bookings, rooms]: [any[], any[]]) => {
+        this.bookings = bookings.map((b: any) => {
+          const room = rooms.find((r: any) => r.room_number === b.room_number);
+          const pricePerNight = Number(room?.price_per_night) || 0;
+
+          const checkIn = new Date(b.check_in);
+          const checkOut = new Date(b.check_out);
+          const nights = Math.max(
+            1,
+            Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)),
+          );
+
+          return { ...b, total_amount: pricePerNight * nights };
+        });
         this.cdr.markForCheck();
       },
-      error: (err) => console.log(err),
+      error: (err) => console.log('lỗi:', err),
     });
   }
 
@@ -67,7 +82,6 @@ export class Bookings implements OnInit {
       .filter((b) => this.selectedIds.has(b.id))
       .reduce((sum, b) => sum + (b.total_amount || 0), 0);
   }
-
 
   pay() {
     if (!this.selectedIds.size) return;
@@ -101,16 +115,12 @@ export class Bookings implements OnInit {
     switch (status) {
       case 'Chờ Xác Nhận':
         return 'waiting-status';
-
       case 'Đã Xác Nhận':
         return 'confirmed-status';
-
       case 'Đã Check-in':
         return 'checkin-status';
-
       case 'Đã Check-out':
         return 'checkout-status';
-
       default:
         return '';
     }
