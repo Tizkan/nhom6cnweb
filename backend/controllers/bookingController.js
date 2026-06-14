@@ -46,7 +46,7 @@ exports.createBooking = (req, res) => {
     )
     VALUES (?, ?, ?, ?, ?)
     `,
-    [customer_id, room_id, check_in, check_out, "Đã xác nhận"],
+    [customer_id, room_id, check_in, check_out, "Chờ Xác Nhận"],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -135,7 +135,7 @@ exports.updatePaymentStatus = (req, res) => {
 
   const placeholders = ids.map(() => '?').join(',');
   db.query(
-    `UPDATE Bookings SET status = 'Đã xác nhận' WHERE id IN (${placeholders})`,
+    `UPDATE Bookings SET status = 'Đã Xác Nhận' WHERE id IN (${placeholders})`,
     ids,
     (err) => {
       if (err) return res.status(500).json(err);

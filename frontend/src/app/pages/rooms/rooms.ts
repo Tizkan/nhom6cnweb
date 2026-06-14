@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RoomService } from '../../services/room';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-rooms',
@@ -69,7 +70,7 @@ export class Rooms implements OnInit {
       available: 'Trống',
       occupied: 'Đang ở',
       booked: 'Đã Đặt',
-      cleaning: 'Đã trả phòng',
+      cleaning: 'Đã Trả Phòng',
       maintenance: 'Đang Bảo Trì'
     };
     return map[status] || '';
