@@ -40,7 +40,6 @@ exports.getRoomById = (req, res) => {
         console.log(err);
         return res.status(500).json(err);
       }
-
       res.json(result[0]);
     }
   );
@@ -53,17 +52,14 @@ exports.createRoom = (req, res) => {
   const { room_number, room_type_id, floor_number, status } = req.body;
 
   db.query(
-    `
-    INSERT INTO Rooms (room_number, room_type_id, floor_number, status)
-    VALUES (?, ?, ?, ?)
-    `,
+    `INSERT INTO Rooms (room_number, room_type_id, floor_number, status)
+     VALUES (?, ?, ?, ?)`,
     [room_number, room_type_id, floor_number, status],
     (err, result) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
       }
-
       res.json({
         success: true,
         message: "Thêm phòng thành công",
@@ -81,20 +77,34 @@ exports.updateRoom = (req, res) => {
   const { room_number, room_type_id, floor_number, status } = req.body;
 
   db.query(
-    `
-    UPDATE Rooms
-    SET
-      room_number = ?,
-      room_type_id = ?,
-      floor_number = ?,
-      status = ?
-    WHERE id = ?
-    `,
+    `UPDATE Rooms
+     SET room_number = ?, room_type_id = ?, floor_number = ?, status = ?
+     WHERE id = ?`,
     [room_number, room_type_id, floor_number, status, id],
     (err) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
+      }
+
+      // Map trạng thái phòng → trạng thái booking
+      let bookingStatus = null;
+      const s = (status || '').trim();
+
+      if (s === 'booked') bookingStatus = 'Đã Xác Nhận';
+      else if (s === 'occupied') bookingStatus = 'Đã Check-In';
+      else if (s === 'available') bookingStatus = 'Đã Check-out';
+
+      if (bookingStatus) {
+        db.query(
+          `UPDATE Bookings SET status = ?
+           WHERE room_id = ?
+           AND status NOT IN ('Đã Hủy', 'Đã Check-out')
+           ORDER BY id DESC
+           LIMIT 1`,
+          [bookingStatus, id],
+          (err2) => { if (err2) console.log(err2); }
+        );
       }
 
       res.json({
@@ -112,17 +122,13 @@ exports.deleteRoom = (req, res) => {
   const id = req.params.id;
 
   db.query(
-    `
-    DELETE FROM Rooms
-    WHERE id = ?
-    `,
+    `DELETE FROM Rooms WHERE id = ?`,
     [id],
     (err) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
       }
-
       res.json({
         success: true,
         message: "Xoá phòng thành công",

@@ -30,14 +30,13 @@ export class Rooms implements OnInit {
   loadRooms() {
     this.roomService.getRooms().subscribe({
       next: (data) => {
-        console.log('data trả về:', data[0]);
         this.rooms = data.map((r: any) => {
           let rawStatus = (r.status || '').toLowerCase().trim();
           let status = 'available';
-          if (rawStatus === 'Đã Check-in') status = 'occupied';
-          else if (rawStatus === 'Đã Đặt') status = 'booked';
-          else if (rawStatus === 'Đã Check-out') status = 'cleaning';
-          else if (rawStatus === 'Đang Bảo Trì') status = 'maintenance'
+          if (rawStatus === 'occupied') status = 'occupied';
+          else if (rawStatus === 'booked') status = 'booked';
+          else if (rawStatus === 'cleaning') status = 'cleaning';
+          else if (rawStatus === 'maintenance') status = 'maintenance';
 
           return { ...r, floor: r.floor_number || 0, status };
         });
@@ -66,13 +65,13 @@ export class Rooms implements OnInit {
 
   getStatusLabel(status: string): string {
     const map: any = {
-      available: 'Trống',
-      occupied: 'Đang ở',
-      booked: 'Đã Đặt',
-      cleaning: 'Đã trả phòng',
-      maintenance: 'Đang Bảo Trì'
+      available:   'Trống',
+      occupied:    'Đang ở',
+      booked:      'Đã đặt',
+      cleaning:    'Đã trả phòng',
+      maintenance: 'Đang bảo trì'
     };
-    return map[status] || '';
+    return map[status] || 'Trống';
   }
 
   goToEdit(id: number) {
