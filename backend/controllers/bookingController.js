@@ -12,7 +12,8 @@ exports.getBookings = (req, res) => {
       b.adults,
       b.children,
       b.total_amount,
-      b.status
+      b.status,
+      b.created_at
     FROM Bookings b
     JOIN Customers c
       ON b.customer_id = c.id
