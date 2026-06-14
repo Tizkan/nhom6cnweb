@@ -7,7 +7,7 @@
 
   <input
     type="text"
-    placeholder=" Tìm kiếm phòng..."
+    placeholder="🔍 Tìm kiếm phòng..."
     class="search"
     [(ngModel)]="searchText"
     (input)="onSearch()"
@@ -51,8 +51,8 @@
 
         <td>
           <div class="actions">
-            <button class="edit-btn" (click)="goToEdit(r.id)">✏</button>
-            <button class="delete-btn" (click)="deleteRoom(r.id)">✖</button>
+            <button class="edit-btn" (click)="goToEdit(r.id)">Sửa</button>
+            <button class="delete-btn" (click)="deleteRoom(r.id)">Xóa</button>
           </div>
         </td>
 
