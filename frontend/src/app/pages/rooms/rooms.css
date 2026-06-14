@@ -58,6 +58,7 @@ th, td {
 .status.occupied  { background: #e74c3c; }
 .status.booked    { background: #f1c40f; color: #000; }
 .status.cleaning  { background: #9b59b6; }
+.status.maintenance { background: #ef6986; }
 
 .actions {
   display: flex;

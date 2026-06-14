@@ -5,7 +5,6 @@
 <form class="form-card" (ngSubmit)="updateBooking()">
   <div class="form-group">
     <label>Khách hàng</label>
-
     <select [(ngModel)]="booking.customer_id" name="customer_id">
       <option *ngFor="let c of customers" [value]="c.id">
         {{ c.full_name }}
@@ -15,7 +14,6 @@
 
   <div class="form-group">
     <label>Phòng</label>
-
     <select [(ngModel)]="booking.room_id" name="room_id">
       <option *ngFor="let r of rooms" [value]="r.id">Phòng {{ r.room_number }}</option>
     </select>
@@ -23,27 +21,21 @@
 
   <div class="form-group">
     <label>Check In</label>
-
     <input type="date" [(ngModel)]="booking.check_in" name="check_in" />
   </div>
 
   <div class="form-group">
     <label>Check Out</label>
-
     <input type="date" [(ngModel)]="booking.check_out" name="check_out" />
   </div>
 
   <div class="form-group">
     <label>Trạng thái</label>
-
     <select [(ngModel)]="booking.status" name="status">
-      <option value="Đã Xác Nhận">Đã Xác Nhận</option>
-
-      <option value="Đã Check-in">Đã Check-in</option>
-
-      <option value="Đã Check-out">Đã Check-out</option>
-
       <option value="Chờ Xác Nhận">Chờ Xác Nhận</option>
+      <option value="Đã Xác Nhận">Đã Xác Nhận</option>
+      <option value="Đã Check-in">Đã Check-in</option>
+      <option value="Đã Check-out">Đã Check-out</option>
     </select>
   </div>
 
