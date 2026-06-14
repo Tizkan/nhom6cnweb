@@ -1,54 +1,61 @@
-require('dotenv').config(); 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const path = require("path");
 
+const app = express();
+
+// ================= MIDDLEWARE =================
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set('trust proxy', 1);
+
+// ================= ROUTES =================
 const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 
-const app = express();
-
-app.set('trust proxy', 1);                        
-app.use(express.urlencoded({ extended: true }));  
-app.use((req, res, next) => {                     
-  res.setHeader('ngrok-skip-browser-warning', 'true');
-  next();
-});
-
-app.use(cors());
-app.use(express.json());
+// ⚠️ ĐÚNG THEO FILE CỦA BẠN
+const reportRouters = require('./routes/reportRoutes');
+const paymentRoutes = require('./routes/payment');
 
 app.use('/auth', authRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/rooms', roomRoutes);
 app.use('/customers', customerRoutes);
+app.use('/reports', reportRouters);
+app.use('/api/payment', paymentRoutes);
 
-// Serve frontend static files (built Angular app)
+// ================= FRONTEND ANGULAR =================
 const frontendPath = path.join(__dirname, '../frontend/dist/frontend/browser');
+
 app.use(express.static(frontendPath));
 
-// SPA fallback: for any GET request that is not an API route, serve index.html
-const apiPrefixes = ['/auth', '/bookings', '/rooms', '/customers', '/api/auth', '/api/bookings', '/api/rooms', '/api/customers', '/api/payment'];
-
-const paymentRouter = require('./routes/payment');
-app.use('/api/payment', paymentRouter);
+const apiPrefixes = [
+  '/auth',
+  '/bookings',
+  '/rooms',
+  '/customers',
+  '/reports',
+  '/api/payment'
+];
 
 app.use((req, res, next) => {
-  console.log('>>> MIDDLEWARE path:', req.path, '| method:', req.method);
-  // only handle GET requests here
+
   if (req.method !== 'GET') return next();
 
-  // if request path starts with any API prefix, pass through to API handlers
-  if (apiPrefixes.some((prefix) => req.path.startsWith(prefix))) {
+  if (apiPrefixes.some(p => req.path.startsWith(p))) {
     return next();
   }
 
-  // otherwise serve the Angular app entrypoint
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
+// ================= START SERVER =================
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
