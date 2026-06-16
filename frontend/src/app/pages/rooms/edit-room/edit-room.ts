@@ -12,7 +12,6 @@ import { RoomService } from '../../../services/room';
   styleUrls: ['./edit-room.css'],
 })
 export class EditRoom implements OnInit {
-
   id: number = 0;
 
   room: any = {
@@ -32,7 +31,7 @@ export class EditRoom implements OnInit {
     private roomService: RoomService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -42,13 +41,25 @@ export class EditRoom implements OnInit {
 
   loadRoom() {
     this.roomService.getRoomById(this.id).subscribe((data: any) => {
-      this.room = data;
+      this.room = {
+        room_number: data.room_number,
+        floor_number: data.floor_number,
+        room_type_id: Number(data.room_type_id),
+        status: data.status,
+      };
       this.cdr.detectChanges();
     });
   }
 
   updateRoom() {
-    this.roomService.updateRoom(this.id, this.room).subscribe({
+    const payload = {
+      room_number: this.room.room_number,
+      floor_number: this.room.floor_number,
+      room_type_id: Number(this.room.room_type_id),
+      status: this.room.status,
+    };
+
+    this.roomService.updateRoom(this.id, payload).subscribe({
       next: () => {
         alert('Cập nhật thành công');
         this.router.navigate(['/rooms']);

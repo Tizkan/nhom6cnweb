@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RoomService } from '../../services/room';
-import { BookingService } from '../../services/booking';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-rooms',
@@ -21,7 +19,6 @@ export class Rooms implements OnInit {
 
   constructor(
     private roomService: RoomService,
-    private bookingService: BookingService,
     private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
@@ -31,31 +28,12 @@ export class Rooms implements OnInit {
   }
 
   loadRooms() {
-    forkJoin([
-      this.roomService.getRooms(),
-      this.bookingService.getBookings()
-    ]).subscribe({
-      next: ([rooms, bookings]: [any[], any[]]) => {
-        this.rooms = rooms.map((r: any) => {
-
-          // Tìm booking mới nhất của phòng này theo room_number
-          const roomBookings = bookings.filter((b: any) =>
-            b.room_number === r.room_number
-          );
-          const latestBooking = roomBookings[roomBookings.length - 1];
-
-          // Map trạng thái booking → trạng thái phòng
-          let status = r.status || 'available';
-          if (latestBooking) {
-            const bs = (latestBooking.status || '').trim();
-            if (bs === 'Chờ Xác Nhận') status = 'available';
-            else if (bs === 'Đã Xác Nhận') status = 'booked';
-            else if (bs === 'Đã Check-In') status = 'occupied';
-            else if (bs === 'Đã Check-out') status = 'cleaning';
-          }
-
-          return { ...r, floor: r.floor_number || 0, status };
-        });
+    this.roomService.getRooms().subscribe({
+      next: (rooms: any[]) => {
+        this.rooms = rooms.map((r: any) => ({
+          ...r,
+          floor: r.floor_number || 0,
+        }));
         this.filteredRooms = [...this.rooms];
         this.cdr.markForCheck();
       },
@@ -84,7 +62,7 @@ export class Rooms implements OnInit {
       available:   'Trống',
       occupied:    'Đang ở',
       booked:      'Đã đặt',
-      cleaning:    'Đã trả phòng',
+      cleaning:    'Đang dọn dẹp',
       maintenance: 'Đang bảo trì',
     };
     return map[status] || 'Trống';
