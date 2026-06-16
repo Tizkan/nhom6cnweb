@@ -83,29 +83,35 @@ exports.deleteBooking = (req, res) => {
 
 exports.updateBooking = (req, res) => {
   const id = req.params.id;
-
   const { customer_id, room_id, check_in, check_out, status } = req.body;
 
   db.query(
-    `
-    UPDATE Bookings
-    SET
-      customer_id = ?,
-      room_id = ?,
-      check_in = ?,
-      check_out = ?,
-      status = ?
-    WHERE id = ?
-    `,
+    `UPDATE Bookings SET customer_id=?, room_id=?, check_in=?, check_out=?, status=? WHERE id=?`,
     [customer_id, room_id, check_in, check_out, status, id],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json(err);
+    (err) => {
+      if (err) return res.status(500).json(err);
+
+      // Map booking status → room status
+      const map = {
+        "Chờ Xác Nhận": "available",
+        "Đã Xác Nhận": "booked",
+        "Đã Check-in": "occupied",
+        "Đã Check-out": "cleaning",
+        "Đang Bảo Trì": "maintenance",
+      };
+
+      const roomStatus = map[status?.trim()];
+      if (roomStatus && room_id) {
+        db.query(
+          `UPDATE Rooms SET status=? WHERE id=?`,
+          [roomStatus, room_id],
+          (err2) => {
+            if (err2) console.log(err2);
+          },
+        );
       }
 
-      res.json({
-        success: true,
-      });
+      res.json({ success: true });
     },
   );
 };
@@ -131,15 +137,16 @@ exports.getBookingById = (req, res) => {
 };
 exports.updatePaymentStatus = (req, res) => {
   const { ids } = req.body; // mảng id booking
-  if (!ids || !ids.length) return res.status(400).json({ message: 'Không có booking nào' });
+  if (!ids || !ids.length)
+    return res.status(400).json({ message: "Không có booking nào" });
 
-  const placeholders = ids.map(() => '?').join(',');
+  const placeholders = ids.map(() => "?").join(",");
   db.query(
     `UPDATE Bookings SET status = 'Đã Xác Nhận' WHERE id IN (${placeholders})`,
     ids,
     (err) => {
       if (err) return res.status(500).json(err);
       res.json({ success: true });
-    }
+    },
   );
 };

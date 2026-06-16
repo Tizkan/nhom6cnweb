@@ -77,40 +77,14 @@ exports.updateRoom = (req, res) => {
   const { room_number, room_type_id, floor_number, status } = req.body;
 
   db.query(
-    `UPDATE Rooms
-     SET room_number = ?, room_type_id = ?, floor_number = ?, status = ?
-     WHERE id = ?`,
+    `UPDATE Rooms SET room_number = ?, room_type_id = ?, floor_number = ?, status = ? WHERE id = ?`,
     [room_number, room_type_id, floor_number, status, id],
     (err) => {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
       }
-
-      // Map trạng thái phòng → trạng thái booking
-      let bookingStatus = null;
-      const s = (status || '').trim();
-
-      if (s === 'available') bookingStatus = 'Chờ Xác Nhận';
-      else if (s === 'booked') bookingStatus = 'Đã Xác Nhận';
-      else if (s === 'occupied') bookingStatus = 'Đã Check-in';
-      else if (s === 'cleaning') bookingStatus = 'Đã Check-out';
-
-      if (bookingStatus) {
-        db.query(
-          `UPDATE Bookings SET status = ?
-           WHERE room_id = ?
-           ORDER BY id DESC
-           LIMIT 1`,
-          [bookingStatus, id],
-          (err2) => { if (err2) console.log(err2); }
-        );
-      }
-
-      res.json({
-        success: true,
-        message: "Cập nhật phòng thành công",
-      });
+      res.json({ success: true, message: "Cập nhật phòng thành công" });
     }
   );
 };
