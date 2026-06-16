@@ -4,6 +4,8 @@ const crypto = require("crypto");
 const qs = require("qs");
 const db = require("../config/db");
 
+//Sort theo alphabet — VNPay yêu cầu các tham số 
+//phải được sắp xếp theo thứ tự chữ cái trước khi ký.
 function buildQuery(obj) {
   return Object.keys(obj)
     .sort()
@@ -11,6 +13,7 @@ function buildQuery(obj) {
     .join("&");
 }
 
+//Tạo chữ ký số HMAC-SHA512. Dùng VNPAY_HASH_SECRET làm khóa.
 function hmacSHA512(data, secret) {
   return crypto.createHmac("sha512", secret).update(data, "utf8").digest("hex");
 }
@@ -26,8 +29,6 @@ function getIp(req) {
 // ================= CREATE =================
 router.post("/create", (req, res) => {
   try {
-    console.log("🔥 HIT CREATE API");
-
     const { amount, bookingIds = [] } = req.body;
 
     const date = new Date();
@@ -37,13 +38,15 @@ router.post("/create", (req, res) => {
       `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
       `${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
 
+        //txnRef mã hóa cả timestamp 
+        //+ danh sách booking ID để sau khi VNPay return về có thể trích xuất ra.
     const txnRef = `${Date.now()}__${bookingIds.join("-")}`;
 
     let vnpParams = {
       vnp_Version: "2.1.0",
       vnp_Command: "pay",
       vnp_TmnCode: process.env.VNPAY_TMN_CODE,
-      vnp_Amount: Math.round(Number(amount) * 100),
+      vnp_Amount: Math.round(Number(amount) * 100),//1nvđ = 100 vì không nhận thập phân trong sql
       vnp_CurrCode: "VND",
       vnp_TxnRef: `${Date.now()}__${bookingIds.join("-")}`,
       vnp_OrderInfo: "test",
@@ -53,17 +56,11 @@ router.post("/create", (req, res) => {
       vnp_IpAddr: getIp(req),
       vnp_CreateDate: createDate,
     };
-
-    // 🔥 SIGN DATA
     const signData = buildQuery(vnpParams);
-
-    console.log("🔥 SIGN DATA =", signData);
 
     const secureHash = hmacSHA512(signData, process.env.VNPAY_HASH_SECRET);
 
     vnpParams.vnp_SecureHash = secureHash;
-
-    // 🔥 BUILD URL SAU KHI ADD HASH
     const paymentUrl = process.env.VNPAY_URL + "?" + buildQuery(vnpParams);
 
     return res.json({ paymentUrl });
@@ -74,17 +71,21 @@ router.post("/create", (req, res) => {
 });
 
 // ================= RETURN =================
-router.get("/vnpay-return", (req, res) => {
+router.get("/vnpay-return", (req, res) => { //Nhận kết quả từ VNPay
   try {
+    // 1. Lấy hash từ VNPay gửi về
     const secureHash = req.query.vnp_SecureHash;
 
     let vnpParams = { ...req.query };
+    // 2. Xóa hash khỏi params
     delete vnpParams.vnp_SecureHash;
     delete vnpParams.vnp_SecureHashType;
 
     const signData = buildQuery(vnpParams);
+    // 3. Tự tính lại hash
     const expectedHash = hmacSHA512(signData, process.env.VNPAY_HASH_SECRET);
 
+    // 4. So sánh — nếu khác nhau → dữ liệu bị giả mạo
     if (expectedHash !== secureHash) {
       return res.redirect(
         "http://localhost:4200/bookings?payment=fail&reason=invalid_signature",
@@ -92,8 +93,10 @@ router.get("/vnpay-return", (req, res) => {
     }
 
     const responseCode = req.query.vnp_ResponseCode;
+    
+    // 5. Kiểm tra mã phản hồi
+    if (responseCode !== "00") {// "00" = thành công
 
-    if (responseCode !== "00") {
       return res.redirect(
         `http://localhost:4200/bookings?payment=fail&code=${responseCode}`,
       );
@@ -101,7 +104,8 @@ router.get("/vnpay-return", (req, res) => {
 
     // Lấy bookingIds từ TxnRef: "timestamp__1-2-3"
     const txnRef = req.query.vnp_TxnRef || "";
-    const parts = txnRef.split("__");
+    // 6. Giải mã bookingIds từ txnRef bỏ __
+    const parts = txnRef.split("__");//["timestamp", "1-2-3"]
     const bookingIds = parts[1]
       ? parts[1].split("-").map(Number).filter(Boolean)
       : [];

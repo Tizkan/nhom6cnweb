@@ -58,25 +58,28 @@ export class CreateBooking implements OnInit {
     );
   }
 
+  //kiểm tra xung đột
   isRoomConflict(roomId: string, checkIn: string, checkOut: string): boolean {
     const newIn = new Date(checkIn).getTime();
     const newOut = new Date(checkOut).getTime();
     const selectedRoom = this.rooms.find((r: any) => r.id?.toString() === roomId?.toString());
 
     return this.bookings.some((b: any) => {
-      // Chỉ block nếu đã xác nhận hoặc đang check-in
+      // Chỉ block phòng đã xác nhận hoặc đang check-in là đang giữ
+      // còn đang chờ xác nhận hoặc checkout thì ko block
       const blockedStatuses = ['Đã Xác Nhận', 'Đã Check-in'];
       if (!blockedStatuses.includes(b.status)) return false;
-
+      // Chỉ kiểm tra cùng phòng
       if (b.room_number?.toString() !== selectedRoom?.room_number?.toString()) return false;
 
       const bIn = new Date(b.check_in).getTime();
       const bOut = new Date(b.check_out).getTime();
-
+      // Kiểm tra overlap thời gian: newIn < bOut && newOut > bIn
       return newIn < bOut && newOut > bIn;
     });
   }
 
+  //kiểm tra các trường nhập trước khi lưu
   saveBooking() {
     if (!this.booking.room_id || !this.booking.check_in || !this.booking.check_out) {
       alert('Vui lòng điền đầy đủ thông tin');

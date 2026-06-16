@@ -14,7 +14,7 @@ import { forkJoin } from 'rxjs';
 })
 export class Bookings implements OnInit {
   bookings: any[] = [];
-  selectedIds: Set<number> = new Set();
+  selectedIds: Set<number> = new Set(); // Dùng Set để không trùng lặp
   paying = false;
 
   constructor(
@@ -41,23 +41,18 @@ export class Bookings implements OnInit {
     });
   }
 
+  // Dùng forkJoin để gọi 2 API cùng lúc, chờ cả 2 xong mới xử lý
   loadBookings() {
     forkJoin([this.bookingService.getBookings(), this.roomService.getRooms()]).subscribe({
       next: ([bookings, rooms]: [any[], any[]]) => {
         this.bookings = bookings.map((b: any) => {
           const room = rooms.find((r: any) => r.room_number === b.room_number);
           const pricePerNight = Number(room?.price_per_night) || 0;
-
-          const checkIn = new Date(b.check_in);
-          const checkOut = new Date(b.check_out);
-          const nights = Math.max(
-            1,
-            Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)),
-          );
+          const nights = this.getNights(b.check_in, b.check_out);
 
           return { ...b, total_amount: pricePerNight * nights };
         });
-        this.cdr.markForCheck();
+        this.cdr.markForCheck();// này chung với forkjoin là UI cập nhất đúng sau khi data về
       },
       error: (err) => console.log('lỗi:', err),
     });
@@ -68,10 +63,12 @@ export class Bookings implements OnInit {
     return b.status === 'Chờ Xác Nhận';
   }
 
+  //theo dõi thao tâc với id chọn, xóa, thêm
   toggleSelect(id: number) {
     this.selectedIds.has(id) ? this.selectedIds.delete(id) : this.selectedIds.add(id);
   }
 
+  //chứa các id đang chọn checkbox
   isSelected(id: number): boolean {
     return this.selectedIds.has(id);
   }
@@ -87,8 +84,9 @@ export class Bookings implements OnInit {
     if (!this.selectedIds.size) return;
     this.paying = true;
 
-    const ids = Array.from(this.selectedIds);
+    const ids = Array.from(this.selectedIds);// Set → Array chứa các id đã chọn để thanh toán
 
+    //Khi nhấn thanh toán sẽ Redirect sang URL VNpay
     this.bookingService.createPayment(ids, this.selectedTotal).subscribe({
       next: (res) => {
         window.location.href = res.paymentUrl;
@@ -100,6 +98,13 @@ export class Bookings implements OnInit {
     });
   }
 
+  //hàm tính số đêm
+  getNights(checkIn: string, checkOut: string): number {
+    const msPerDay = 1000 * 60 * 60 * 24;
+    return Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / msPerDay);
+  }
+
+  //hàm xóa theo id
   deleteBooking(id: number) {
     if (!confirm('Bạn có chắc muốn xóa?')) return;
     this.bookingService.deleteBooking(id).subscribe({
@@ -108,9 +113,11 @@ export class Bookings implements OnInit {
     });
   }
 
+  //hàm tính tổng trạng booking theo từng trạng thái
   getBookingCount(status: string): number {
     return this.bookings.filter((b: any) => b.status === status).length;
   }
+
   getStatusClass(status: string): string {
     switch (status) {
       case 'Chờ Xác Nhận':
