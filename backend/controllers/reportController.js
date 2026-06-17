@@ -66,8 +66,6 @@ FROM rooms
   [validStatuses],
 );
 
-console.log("=== stayRows tháng này ===", stayRows);
-
 const totalDays = stayRows.reduce((sum, b) => {
   if (!b.check_in || !b.check_out) return sum;
   const diff =

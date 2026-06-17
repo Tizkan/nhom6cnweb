@@ -26,6 +26,7 @@ export class EditBooking implements OnInit {
     check_in: '',
     check_out: '',
     status: '',
+    total_price: 0,
   };
 
   constructor(
@@ -38,10 +39,10 @@ export class EditBooking implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.id = Number(this.route.snapshot.paramMap.get('id'));// Lấy ID từ URL
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
     this.loadCustomers();
     this.loadRooms();
-    this.loadBooking();// Load data booking hiện tại
+    this.loadBooking();
   }
 
   loadCustomers() {
@@ -66,26 +67,41 @@ export class EditBooking implements OnInit {
   loadBooking() {
     this.bookingService.getBookingById(this.id).subscribe((data) => {
       this.booking = data;
-      // Cắt phần giờ khỏi datetime để input date hiển thị đúng
       this.booking.check_in = this.booking.check_in ? this.booking.check_in.split('T')[0] : '';
       this.booking.check_out = this.booking.check_out ? this.booking.check_out.split('T')[0] : '';
       this.cdr.detectChanges();
     });
   }
 
-  //Kiểm tra xung đột phòng tương tụ create booking
+  // Tính total_price = số đêm × giá room_type
+  calcTotalPrice(): number {
+    const room = this.rooms.find(
+      (r: any) => r.id?.toString() === this.booking.room_id?.toString()
+    );
+    // room.price_per_night lấy từ getRooms() đã JOIN với room_types (field: price_per_night)
+    if (!room || !room.price_per_night) return 0;
+
+    const checkIn = new Date(this.booking.check_in).getTime();
+    const checkOut = new Date(this.booking.check_out).getTime();
+    const nights = Math.round((checkOut - checkIn) / (1000 * 60 * 60 * 24));// đc làm tròn
+
+    // trả về 0 nếu không tìm thấy phòng hoặc ngày không hợp lệ
+    return nights > 0 ? nights * room.price_per_night : 0;
+  }
+
+  //kiểm tra xung đột
   isRoomConflict(roomId: string, checkIn: string, checkOut: string): boolean {
     const newIn = new Date(checkIn).getTime();
     const newOut = new Date(checkOut).getTime();
     const selectedRoom = this.rooms.find((r: any) => r.id?.toString() === roomId?.toString());
 
     return this.bookings.some((b: any) => {
-      if (b.id === this.id) return false; // chỉ cần trong edit-booking
-
-      // Chỉ block nếu đã xác nhận hoặc đang check-in
+      if (b.id === this.id) return false;
+      // Chỉ block phòng đã xác nhận hoặc đang check-in là đang giữ
+      // còn đang chờ xác nhận hoặc checkout thì ko block
       const blockedStatuses = ['Đã Xác Nhận', 'Đã Check-in'];
       if (!blockedStatuses.includes(b.status)) return false;
-
+       // Chỉ kiểm tra cùng phòng
       if (b.room_number?.toString() !== selectedRoom?.room_number?.toString()) return false;
 
       const bIn = new Date(b.check_in).getTime();
@@ -95,6 +111,7 @@ export class EditBooking implements OnInit {
     });
   }
 
+  //kiểm tra các trường nhập trước khi lưu
   updateBooking() {
     if (!this.booking.room_id || !this.booking.check_in || !this.booking.check_out) {
       alert('Vui lòng điền đầy đủ thông tin');
@@ -110,6 +127,9 @@ export class EditBooking implements OnInit {
       alert('Phòng này đã có người đặt trong khoảng thời gian đó!');
       return;
     }
+
+    // Tính lại tiền rồi mới lưu
+    this.booking.total_price = this.calcTotalPrice();
 
     this.bookingService.updateBooking(this.id, this.booking).subscribe({
       next: () => {

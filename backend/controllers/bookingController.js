@@ -1,6 +1,5 @@
 const db = require("../config/db");
 
-
 //Lấy danh sách booking
 //JOIN 3 bảng: Bookings + Customers + Rooms để lấy đầy đủ thông tin hiển thị.
 exports.getBookings = (req, res) => {
@@ -35,14 +34,14 @@ exports.getBookings = (req, res) => {
 };
 
 //Tạo booking mới
-//Booking mới luôn có status mặc định là 
+//Booking mới luôn có status mặc định là
 // "Chờ Xác Nhận". Dấu ? là prepared statement — chống SQL Injection.
 exports.createBooking = (req, res) => {
   const { customer_id, room_id, check_in, check_out } = req.body;
 
   //tính số đêm
   const nights = Math.ceil(
-    (new Date(check_out) - new Date(check_in)) / (1000 * 60 * 60 * 24)
+    (new Date(check_out) - new Date(check_in)) / (1000 * 60 * 60 * 24),
   );
 
   db.query(
@@ -61,13 +60,20 @@ exports.createBooking = (req, res) => {
         `INSERT INTO Bookings 
           (customer_id, room_id, check_in, check_out, total_amount, status)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [customer_id, room_id, check_in, check_out, total_amount, "Chờ Xác Nhận"],
+        [
+          customer_id,
+          room_id,
+          check_in,
+          check_out,
+          total_amount,
+          "Chờ Xác Nhận",
+        ],
         (err2) => {
           if (err2) return res.status(500).json(err2);
           res.json({ success: true, total_amount });
-        }
+        },
       );
-    }
+    },
   );
 };
 //xóa booking theo id
@@ -97,33 +103,52 @@ exports.updateBooking = (req, res) => {
   const id = req.params.id;
   const { customer_id, room_id, check_in, check_out, status } = req.body;
 
+  //tính số đêm
+  const nights = Math.ceil(
+    (new Date(check_out) - new Date(check_in)) / (1000 * 60 * 60 * 24),
+  );
+
+  // Lấy giá phòng từ room_types để tính lại total_amount
   db.query(
-    `UPDATE Bookings SET customer_id=?, room_id=?, check_in=?, check_out=?, status=? WHERE id=?`,
-    [customer_id, room_id, check_in, check_out, status, id],
-    (err) => {
-      if (err) return res.status(500).json(err);
+    `SELECT rt.price FROM Rooms r
+     JOIN room_types rt ON r.room_type_id = rt.id
+     WHERE r.id = ?`,
+    [room_id],
+    (err, rows) => {
+      if (err || !rows.length)
+        return res.status(500).json({ message: "Không tìm thấy phòng" });
 
-      // Map booking status → room status
-      const map = {
-        "Chờ Xác Nhận": "available",
-        "Đã Xác Nhận": "booked",
-        "Đã Check-in": "occupied",
-        "Đã Check-out": "cleaning",
-        "Đang Bảo Trì": "maintenance",
-      };
+      const total_amount = parseFloat(rows[0].price) * nights;
 
-      const roomStatus = map[status?.trim()];
-      if (roomStatus && room_id) {
-        db.query(
-          `UPDATE Rooms SET status=? WHERE id=?`,
-          [roomStatus, room_id],
-          (err2) => {
-            if (err2) console.log(err2);
-          },
-        );
-      }
+      db.query(
+        `UPDATE Bookings SET customer_id=?, room_id=?, check_in=?, check_out=?, status=?, total_amount=? WHERE id=?`,
+        [customer_id, room_id, check_in, check_out, status, total_amount, id],
+        (err2) => {
+          if (err2) return res.status(500).json(err2);
 
-      res.json({ success: true });
+          // Map booking status → room status
+          const map = {
+            "Chờ Xác Nhận": "available",
+            "Đã Xác Nhận": "booked",
+            "Đã Check-in": "occupied",
+            "Đã Check-out": "cleaning",
+            "Đang Bảo Trì": "maintenance",
+          };
+
+          const roomStatus = map[status?.trim()];
+          if (roomStatus && room_id) {
+            db.query(
+              `UPDATE Rooms SET status=? WHERE id=?`,
+              [roomStatus, room_id],
+              (err3) => {
+                if (err3) console.log(err3);
+              },
+            );
+          }
+
+          res.json({ success: true, total_amount });
+        },
+      );
     },
   );
 };
@@ -144,7 +169,7 @@ exports.getBookingById = (req, res) => {
         return res.status(500).json(err);
       }
 
-      res.json(result[0]);// result là array, lấy phần tử đầu tiên
+      res.json(result[0]); // result là array, lấy phần tử đầu tiên
     },
   );
 };
@@ -154,9 +179,9 @@ exports.updatePaymentStatus = (req, res) => {
   if (!ids || !ids.length)
     return res.status(400).json({ message: "Không có booking nào" });
 
-  const placeholders = ids.map(() => "?").join(",");//"?,?,?"
+  const placeholders = ids.map(() => "?").join(","); //"?,?,?"
   db.query(
-    `UPDATE Bookings SET status = 'Đã Xác Nhận' WHERE id IN (${placeholders})`,//chứa các id đã thanh toán và đổi status
+    `UPDATE Bookings SET status = 'Đã Xác Nhận' WHERE id IN (${placeholders})`, //chứa các id đã thanh toán và đổi status
     ids,
     (err) => {
       if (err) return res.status(500).json(err);
