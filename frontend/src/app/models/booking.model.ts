@@ -1,5 +1,5 @@
 export interface Booking {
-  id?: number;
+  id: number;
 
   customer_id: number;
 

@@ -38,10 +38,10 @@ export class EditBooking implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.id = Number(this.route.snapshot.paramMap.get('id'));// Lấy ID từ URL
     this.loadCustomers();
     this.loadRooms();
-    this.loadBooking();
+    this.loadBooking();// Load data booking hiện tại
   }
 
   loadCustomers() {
@@ -66,12 +66,14 @@ export class EditBooking implements OnInit {
   loadBooking() {
     this.bookingService.getBookingById(this.id).subscribe((data) => {
       this.booking = data;
+      // Cắt phần giờ khỏi datetime để input date hiển thị đúng
       this.booking.check_in = this.booking.check_in ? this.booking.check_in.split('T')[0] : '';
       this.booking.check_out = this.booking.check_out ? this.booking.check_out.split('T')[0] : '';
       this.cdr.detectChanges();
     });
   }
 
+  //Kiểm tra xung đột phòng tương tụ create booking
   isRoomConflict(roomId: string, checkIn: string, checkOut: string): boolean {
     const newIn = new Date(checkIn).getTime();
     const newOut = new Date(checkOut).getTime();

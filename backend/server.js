@@ -12,7 +12,7 @@ const paymentRouter = require("./routes/payment");
 
 const app = express();
 
-// Trust proxy (ngrok, reverse proxy...)
+// Trust proxy
 app.set("trust proxy", 1);
 
 // Middleware
@@ -35,10 +35,9 @@ app.use("/api/payment", paymentRouter);
 
 // Angular build path
 const frontendPath = path.join(__dirname, "../frontend/dist/frontend/browser");
-
 app.use(express.static(frontendPath));
 
-// API prefixes (không redirect sang Angular)
+// API prefixes
 const apiPrefixes = [
   "/auth",
   "/bookings",
@@ -56,15 +55,9 @@ const apiPrefixes = [
 app.use((req, res, next) => {
   console.log(">>> MIDDLEWARE path:", req.path, "| method:", req.method);
 
-  if (req.method !== "GET") {
-    return next();
-  }
+  if (req.method !== "GET") return next();
 
-  const isApiRequest = apiPrefixes.some((prefix) =>
-    req.path.startsWith(prefix),
-  );
-
-  if (isApiRequest) {
+  if (apiPrefixes.some((prefix) => req.path.startsWith(prefix))) {
     return next();
   }
 
