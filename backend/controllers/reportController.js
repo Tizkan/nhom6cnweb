@@ -56,23 +56,25 @@ FROM rooms
     // 3. THỜI GIAN LƯU TRÚ TB
     // =========================
     const [stayRows] = await db.promise().query(
-      `
-      SELECT check_in, check_out
-      FROM bookings
-      WHERE status IN (?)
-      `,
-      [validStatuses],
-    );
+  `
+  SELECT check_in, check_out
+  FROM bookings
+  WHERE MONTH(created_at) = MONTH(CURDATE())
+    AND YEAR(created_at) = YEAR(CURDATE())
+    AND TRIM(status) IN (?)
+  `,
+  [validStatuses],
+);
 
-    const totalDays = stayRows.reduce((sum, b) => {
-      if (!b.check_in || !b.check_out) return sum;
-      const diff =
-        (new Date(b.check_out) - new Date(b.check_in)) / (1000 * 60 * 60 * 24);
-      return sum + diff;
-    }, 0);
+const totalDays = stayRows.reduce((sum, b) => {
+  if (!b.check_in || !b.check_out) return sum;
+  const diff =
+    (new Date(b.check_out) - new Date(b.check_in)) / (1000 * 60 * 60 * 24);
+  return sum + diff;
+}, 0);
 
-    const avgDays =
-      stayRows.length > 0 ? (totalDays / stayRows.length).toFixed(1) : 0;
+const avgDays =
+  stayRows.length > 0 ? (totalDays / stayRows.length).toFixed(1) : 0;
 
     // =========================
     // 4. BIỂU ĐỒ DOANH THU (FIXED 100%)
