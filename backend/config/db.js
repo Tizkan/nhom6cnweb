@@ -5,7 +5,7 @@ const db = mysql.createConnection({
   user: "root",
   password: "123456",
   database: "hotelmanager",
-  port: 3306
+  port: 3306,
 });
 
 db.connect((err) => {
@@ -17,5 +17,3 @@ db.connect((err) => {
 });
 
 module.exports = db;
-
-

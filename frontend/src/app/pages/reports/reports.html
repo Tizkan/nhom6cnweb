@@ -1,1 +1,132 @@
-<p>reports works!</p>
+<div class="report-container" *ngIf="!loading && dashboardData">
+
+  <h2 class="main-title">Báo cáo & Phân tích</h2>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card">
+      <p class="title">Doanh thu tháng này</p>
+
+      <p class="value">
+        {{ dashboardData.kpis.monthlyRevenue.displayValue }}
+      </p>
+
+      <p class="growth">
+        <span class="arrow-up">📈</span>
+
+        <span class="green-text">
+          {{ dashboardData.kpis.monthlyRevenue.growth }}
+        </span>
+
+        vs tháng trước
+      </p>
+    </div>
+
+    <div class="kpi-card">
+      <p class="title">Tỷ lệ lấp đầy TB</p>
+
+      <p class="value">
+        {{ dashboardData.kpis.occupancyRate.displayValue }}
+      </p>
+
+      <p class="growth">
+        <span class="arrow-up">📈</span>
+
+        <span class="green-text">
+          {{ dashboardData.kpis.occupancyRate.growth }}
+        </span>
+
+        vs tháng trước
+      </p>
+    </div>
+
+    <div class="kpi-card">
+      <p class="title">Thời gian ở TB</p>
+
+      <p class="value">
+        {{ dashboardData.kpis.averageStayDuration.displayValue }}
+      </p>
+
+      <p class="growth">
+        <span class="arrow-up">📈</span>
+
+        <span class="green-text">
+          {{ dashboardData.kpis.averageStayDuration.growth }}
+        </span>
+
+        vs tháng trước
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+
+    <div class="chart-card">
+      <h3>Doanh thu 6 tháng gần nhất</h3>
+
+      <div class="canvas-wrapper">
+        <canvas #barChart></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Phân bổ loại phòng đã đặt</h3>
+
+      <div class="canvas-wrapper">
+        <canvas #pieChart></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VIP -->
+  <div class="vip-card">
+
+    <h3>Top 5 khách hàng VIP</h3>
+
+    <div class="vip-list">
+
+      <div
+        class="vip-item"
+        *ngFor="let customer of dashboardData.vipCustomers">
+
+        <div class="vip-left">
+
+          <span class="vip-rank">
+            {{ customer.rank }}
+          </span>
+
+          <div class="vip-info">
+
+            <p class="vip-name">
+              {{ customer.name }}
+            </p>
+
+            <p class="vip-count">
+              {{ customer.bookingsCount }} lần đặt
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="vip-amount">
+
+          {{ customer.totalSpent | number:'1.0-0' }} đ
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div *ngIf="loading" class="loading-state">
+  Đang tải dữ liệu từ hệ thống...
+</div>
