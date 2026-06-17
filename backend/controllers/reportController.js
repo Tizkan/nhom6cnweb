@@ -59,12 +59,14 @@ FROM rooms
   `
   SELECT check_in, check_out
   FROM bookings
-  WHERE MONTH(created_at) = MONTH(CURDATE())
-    AND YEAR(created_at) = YEAR(CURDATE())
+  WHERE MONTH(check_in) = MONTH(CURDATE())
+    AND YEAR(check_in) = YEAR(CURDATE())
     AND TRIM(status) IN (?)
   `,
   [validStatuses],
 );
+
+console.log("=== stayRows tháng này ===", stayRows);
 
 const totalDays = stayRows.reduce((sum, b) => {
   if (!b.check_in || !b.check_out) return sum;
